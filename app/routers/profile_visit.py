@@ -46,11 +46,10 @@ async def visited_profile(profile_visited_input: ProfileVisitedInput):
             "message": "Successfully added profile visited entry added successfully!",
         }
 
-    except:
-
+    except Exception as e:
         return {
             "success": False,
-            "message": "Could not add profile visited entry added successfully!",
+            "message": f"Could not add profile visited entry added successfully! \nError: {str(e)}",
         }
 
 
@@ -62,15 +61,15 @@ async def visited_profile(profile_visited_input: ProfileVisitedInput):
 async def get_visitors(user_id: str, N: int = 30):
     try:
         bq_client = bigquery.Client()
-        query_job = bq_client.query(
-            f"""
-            SELECT DISTINCT visitor_id 
+        QUERY = f"""
+            SELECT DISTINCT visitor_id, visited_at 
             FROM `{PROJECT_ID}.{DATASET_ID}.visit_records`
             WHERE user_id = '{user_id}'
             AND visited_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {N} DAY)
-            ORDER BY visited_at DESC
+            ORDER BY visited_at DESC;
         """
-        )
+        print(QUERY)
+        query_job = bq_client.query(QUERY)
         results = query_job.result()
         visitor_ids = [row[0] for row in results]
         visitor_count = len(visitor_ids)
@@ -83,8 +82,8 @@ async def get_visitors(user_id: str, N: int = 30):
             "message": f"{visitor_count} users visited the profile of user_id = '{user_id}' in the last {N} days",
         }
 
-    except:
+    except Exception as e:
         return {
             "success": False,
-            "message": "Could not fetch data from the BigQuery!",
+            "message": f"Could not fetch data from the BigQuery! \n Error: {str(e)}",
         }
