@@ -4,3 +4,5 @@ PUB_SUB_TOPIC_PATH = (
     "projects/profile-tracker-1805032/topics/profile_tracker_pub_sub_topic"
 )
 ENV_ = "dev"
+PROJECT_ID = "profile-tracker-1805032"
+DATASET_ID = "profile_tracker_dev"
